@@ -120,14 +120,25 @@ if st.button("Lấy dữ liệu"):
             avg_rating = filtered_data['rating'].mean()
             if avg_rating < 6:
                 evaluation = "Phong độ Thấp: Cầu thủ thể hiện phong độ kém."
+                color = "#ff6347"  # Màu đỏ cam cho phong độ thấp
             elif 6 <= avg_rating < 7:
                 evaluation = "Phong độ Ổn định: Cầu thủ thể hiện phong độ trung bình."
+                color = "#ffa500"  # Màu cam cho phong độ ổn định
             else:
                 evaluation = "Phong độ Cao: Cầu thủ thể hiện phong độ tốt."
+                color = "#32cd32"  # Màu xanh lá cho phong độ cao
 
             # Hiển thị đánh giá
             st.subheader("Đánh giá cầu thủ:")
-            st.write(evaluation)
+            st.markdown(
+                f"""
+                <div style='padding: 20px; border: 2px solid {color}; border-radius: 10px; background-color: #f0f8ff;'>
+                    <h1 style='color: {color}; text-align: center; font-weight: bold;'>{evaluation}</h1>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
 
             # Vẽ biểu đồ cho từng chỉ số
             x_labels = [f'Trận đấu {i+1}' for i in range(len(filtered_data))]
