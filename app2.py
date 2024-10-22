@@ -26,17 +26,16 @@ def get_player_statistics(match_id, player_id):
 
 # Hàm để phân loại vị trí cầu thủ
 def classify_position(pos):
-    if pos == 'F':
-        return 'Tiền đạo'
-    elif pos == 'M':
-        return 'Tiền vệ'
-    elif pos == 'D':
-        return 'Hậu vệ'
-    else:
-        return 'Khác'
+    position_map = {
+        'F': 'Tiền đạo',
+        'M': 'Tiền vệ',
+        'D': 'Hậu vệ'
+    }
+    return position_map.get(pos, 'Khác')
 
 # Tiêu đề ứng dụng
 st.title("Ứng Dụng Phân Tích Cầu Thủ Bóng Đá")
+st.image("banner_cauthu.png", use_column_width=True)
 
 # Nhập ID cầu thủ và ID trận đấu
 player_id = st.text_input("Nhập ID cầu thủ:")
@@ -68,31 +67,31 @@ if st.button("Lấy dữ liệu"):
                         "height": data.get("player", {}).get("height", ""),
                         "team": data.get("team", {}).get("name", ""),
                         "position": data.get("player", {}).get("position", ""),
-                        "totalPass": data.get("statistics", {}).get("totalPass", ""),
-                        "accuratePass": data.get("statistics", {}).get("accuratePass", ""),
-                        "totalLongBalls": data.get("statistics", {}).get("totalLongBalls", ""),
-                        "accurateLongBalls": data.get("statistics", {}).get("accurateLongBalls", ""),
-                        "totalCross": data.get("statistics", {}).get("totalCross", ""),
-                        "aerialLost": data.get("statistics", {}).get("aerialLost", ""),
-                        "aerialWon": data.get("statistics", {}).get("aerialWon", ""),
-                        "duelLost": data.get("statistics", {}).get("duelLost", ""),
-                        "duelWon": data.get("statistics", {}).get("duelWon", ""),
-                        "challengeLost": data.get("statistics", {}).get("challengeLost", ""),
-                        "dispossessed": data.get("statistics", {}).get("dispossessed", ""),
-                        "totalContest": data.get("statistics", {}).get("totalContest", ""),
-                        "wonContest": data.get("statistics", {}).get("wonContest", ""),
-                        "onTargetScoringAttempt": data.get("statistics", {}).get("onTargetScoringAttempt", ""),
-                        "blockedScoringAttempt": data.get("statistics", {}).get("blockedScoringAttempt", ""),
-                        "goals": data.get("statistics", {}).get("goals", ""),
-                        "wasFouled": data.get("statistics", {}).get("wasFouled", ""),
-                        "fouls": data.get("statistics", {}).get("fouls", ""),
-                        "totalOffside": data.get("statistics", {}).get("totalOffside", ""),
-                        "minutesPlayed": data.get("statistics", {}).get("minutesPlayed", ""),
-                        "touches": data.get("statistics", {}).get("touches", ""),
-                        "rating": data.get("statistics", {}).get("rating", ""),
-                        "possessionLostCtrl": data.get("statistics", {}).get("possessionLostCtrl", ""),
-                        "keyPass": data.get("statistics", {}).get("keyPass", ""),
-                        "expectedAssists": data.get("statistics", {}).get("expectedAssists", "")
+                        "totalPass": data.get("statistics", {}).get("totalPass", 0),
+                        "accuratePass": data.get("statistics", {}).get("accuratePass", 0),
+                        "totalLongBalls": data.get("statistics", {}).get("totalLongBalls", 0),
+                        "accurateLongBalls": data.get("statistics", {}).get("accurateLongBalls", 0),
+                        "totalCross": data.get("statistics", {}).get("totalCross", 0),
+                        "aerialLost": data.get("statistics", {}).get("aerialLost", 0),
+                        "aerialWon": data.get("statistics", {}).get("aerialWon", 0),
+                        "duelLost": data.get("statistics", {}).get("duelLost", 0),
+                        "duelWon": data.get("statistics", {}).get("duelWon", 0),
+                        "challengeLost": data.get("statistics", {}).get("challengeLost", 0),
+                        "dispossessed": data.get("statistics", {}).get("dispossessed", 0),
+                        "totalContest": data.get("statistics", {}).get("totalContest", 0),
+                        "wonContest": data.get("statistics", {}).get("wonContest", 0),
+                        "onTargetScoringAttempt": data.get("statistics", {}).get("onTargetScoringAttempt", 0),
+                        "blockedScoringAttempt": data.get("statistics", {}).get("blockedScoringAttempt", 0),
+                        "goals": data.get("statistics", {}).get("goals", 0),
+                        "wasFouled": data.get("statistics", {}).get("wasFouled", 0),
+                        "fouls": data.get("statistics", {}).get("fouls", 0),
+                        "totalOffside": data.get("statistics", {}).get("totalOffside", 0),
+                        "minutesPlayed": data.get("statistics", {}).get("minutesPlayed", 0),
+                        "touches": data.get("statistics", {}).get("touches", 0),
+                        "rating": data.get("statistics", {}).get("rating", 0),
+                        "possessionLostCtrl": data.get("statistics", {}).get("possessionLostCtrl", 0),
+                        "keyPass": data.get("statistics", {}).get("keyPass", 0),
+                        "expectedAssists": data.get("statistics", {}).get("expectedAssists", 0)
                     }
                     writer.writerow(row)
                     st.success(f"Đã hoàn thành lấy dữ liệu cho trận đấu {match_id.strip()}")
@@ -106,9 +105,8 @@ if st.button("Lấy dữ liệu"):
         filtered_data = player_data[['name', 'match_id', 'position', 'totalPass', 'accuratePass', 'keyPass', 'goals', 'rating']].copy()
 
         # Xử lý dữ liệu NaN
-        filtered_data.loc[:, filtered_data.columns[3:]] = filtered_data.loc[:, filtered_data.columns[3:]].fillna(0)  # Thay thế NaN bằng 0
+        filtered_data.fillna(0, inplace=True)  # Thay thế NaN bằng 0
 
-        # Kiểm tra xem cột 'name' và 'position' có tồn tại không
         if 'name' in filtered_data.columns and 'position' in filtered_data.columns:
             # Lấy tên cầu thủ và phân loại vị trí
             player_name = filtered_data['name'][0]  # Tên cầu thủ
@@ -164,20 +162,9 @@ if st.button("Lấy dữ liệu"):
                 plt.tight_layout()
                 st.pyplot(plt)
 
-            # Tính rating trung bình
-            average_rating = filtered_data['rating'].mean()
-
-            # Phân loại đánh giá
-            if average_rating < 5.5:
-                evaluation = "Phong độ Thấp: Cầu thủ thường xuyên gặp khó khăn trong trận đấu, không có nhiều ảnh hưởng đến lối chơi và có thể bị thay ra."
-            elif 5.5 <= average_rating <= 7.0:
-                evaluation = "Phong độ Ổn định: Cầu thủ thể hiện phong độ trung bình, đóng góp cho đội nhưng không phải là nhân tố chủ chốt."
-            else:
-                evaluation = "Phong độ Cao: Cầu thủ thể hiện phong độ tốt, có ảnh hưởng lớn đến kết quả trận đấu."
-
             # Tạo dữ liệu cho biểu đồ
             evaluation_labels = ['Rating trung bình']
-            evaluation_scores = [average_rating]
+            evaluation_scores = [avg_rating]
 
             # Biểu đồ cột cho đánh giá cầu thủ
             plt.figure(figsize=(6.5, 5))
